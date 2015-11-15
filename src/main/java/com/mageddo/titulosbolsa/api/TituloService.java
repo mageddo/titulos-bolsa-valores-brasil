@@ -18,11 +18,30 @@ import com.mageddo.titulosbolsa.bean.Titulo;
  *
  * @author elvis
  */
-public class TitulosService {
+public class TituloService {
 	 
 	public List<Titulo> getTodosTitulos() throws IOException {
+		List<Titulo> todosTitulos = new ArrayList<>();
+		List<Titulo> resultados;
+		for(int i=0; ;i++){
+			resultados = getTitulos(i);
+			if(resultados.isEmpty())
+				break;
+			todosTitulos.addAll(resultados);
+		}
+		return todosTitulos;
+	}
+	
+	/**
+	 * 
+	 * @param pagina página a receber os resultados, 0 é a primeira
+	 * @return os títulos encontrados ou uma lista vazia se a paǵina não conter significando que nas próximas páginas
+	 * não existem mais registros
+	 * @throws IOException
+	 */
+	public List<Titulo> getTitulos(int pagina) throws IOException{
 		List<Titulo> titulos = new ArrayList<>();
-		Document d = Jsoup.parse(new URL("https://br.financas.yahoo.com/q/cp?s=%5EBVSP"), 15000);
+		Document d = Jsoup.parse(new URL(String.format("https://br.financas.yahoo.com/q/cp?s=%%5EBVSP&c=%d", pagina)), 15000);
 		Elements linhas = d.select(".yfnc_tableout1 table tr");
 		for(Element e: linhas){
 			Elements childs = e.select("td");

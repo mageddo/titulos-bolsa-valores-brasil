@@ -1,13 +1,12 @@
 
 package com.mageddo.titulosbolsa;
 
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.google.gson.GsonBuilder;
-import com.mageddo.titulosbolsa.api.TitulosService;
+import com.mageddo.titulosbolsa.api.TituloService;
 
 /**
  *
@@ -23,7 +22,7 @@ public class Main {
 			requiredOptions.put(args[i].toLowerCase(), null);
 		}
 		if(requiredOptions.isEmpty()){
-			System.err.println("Pass a option");
+			System.err.println("Passe um comando, documentação em: https://github.com/mageddo/titulos-bolsa-valores-brasil");
 			System.exit(-1);
 		}
 		commands.get(requiredOptions.keySet().iterator().next()).run();
@@ -37,8 +36,7 @@ public class Main {
 					GsonBuilder gson = new GsonBuilder();
 					if(requiredOptions.containsKey("--beautifull"))
 						gson.setPrettyPrinting();
-					
-					String json = gson.create().toJson(new TitulosService().getTodosTitulos());
+					String json = gson.create().toJson(new TituloService().getTodosTitulos());
 					System.out.println(json);
 					System.exit(0);
 				} catch (Exception e) {

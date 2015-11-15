@@ -1,6 +1,5 @@
 package com.mageddo.titulosbolsa.bean;
 
-import java.util.Date;
 
 /**
  *
