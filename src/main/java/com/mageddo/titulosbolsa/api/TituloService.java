@@ -2,10 +2,11 @@ package com.mageddo.titulosbolsa.api;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -59,10 +60,26 @@ public class TituloService {
 					.replaceAll(",", ".");
 			
 			t.setUltimaTransacaoValor(new Double(ultimoValorTransacao));
-			String[] valorUltimaData = ultimaTransacao.substring(indiceSeparacaoUltimaTransacao+1).split(" de ");
+			String valorUltimaData = ultimaTransacao.substring(indiceSeparacaoUltimaTransacao+1);
 			Calendar c = Calendar.getInstance();
-			c.set(c.get(Calendar.YEAR), mapMonth(valorUltimaData[1]), new Integer(valorUltimaData[0]));
-			t.setUltimaTransacaoData(new Date(c.getTime().getTime()).getTime());
+			
+			if(ultimaTransacao.indexOf(" de ") != -1){
+				String[] arrayValorUltimaData = ultimaTransacao.substring(indiceSeparacaoUltimaTransacao+1).split(" de ");
+				c.set(c.get(Calendar.YEAR), mapMonth(arrayValorUltimaData[1]), new Integer(arrayValorUltimaData[0]));
+				c.set(Calendar.HOUR_OF_DAY, 17);
+				c.set(Calendar.MINUTE, 0);
+			}else{
+				final String REGEX_HORA = "(\\d+):(\\d+)";
+				final Matcher mPadrao = Pattern.compile(REGEX_HORA).matcher(valorUltimaData);
+				if(mPadrao.find() && mPadrao.groupCount() == 2){
+					int hora = new Integer(mPadrao.group(1));
+					c.set(Calendar.HOUR_OF_DAY, hora);
+					c.set(Calendar.MINUTE, new Integer(mPadrao.group(2)));
+				}
+			}
+			t.setUltimaTransacaoData(c.getTime().getTime());
+			c.set(Calendar.SECOND, 0);
+			c.set(Calendar.MILLISECOND, 0);
 			titulos.add(t);
 		}
 		return titulos;
